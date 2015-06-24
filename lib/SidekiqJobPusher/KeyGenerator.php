@@ -6,7 +6,8 @@ class KeyGenerator
 {
     function generate($queue = 'default', $namespace = null)
     {
-        $parts = $this->compact(array($namespace, 'queue', $queue));
+        $queue_key = $queue == 'schedule' ? null : 'queue';
+        $parts = $this->compact(array($namespace, $queue_key, $queue));
         return implode(':', $parts);
     }
 

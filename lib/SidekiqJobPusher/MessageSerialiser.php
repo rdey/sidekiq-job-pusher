@@ -4,15 +4,20 @@ namespace SidekiqJobPusher;
 
 class MessageSerialiser
 {
-    function serialise($workerClass, $args = array(), $retry = false, $at = null)
+    function prepare($workerClass, $args = array(), $retry = false, $queue = 'default', $at = null)
     {
         $message = array(
             'class' => $workerClass,
             'args'  => $args,
-            'retry' => $retry
+            'retry' => $retry,
+            'queue' => $queue
         );
 
         if(!is_null($at) && $at > time()) $message['at'] = $at;
+        return $message;
+    }
+
+    function serialise(array $message) {
         return json_encode($message);
     }
 }
