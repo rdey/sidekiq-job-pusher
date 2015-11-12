@@ -3,7 +3,7 @@
     "description": "PHP client to interface with Sidekiq",
     "require": {
         "php": ">=5.3.3",
-	"predis/predis": "0.8.*@dev"
+	"predis/predis": "^1.0"
     },
     "autoload": {
         "psr-0": {
