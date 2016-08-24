@@ -1,9 +1,9 @@
 {
-    "name": "musicglue/sidekiq-job-pusher",
+    "name": "redeye/sidekiq-job-pusher",
     "description": "PHP client to interface with Sidekiq",
     "require": {
         "php": ">=5.3.3",
-	"predis/predis": "^1.0"
+	    "predis/predis": "^1.0"
     },
     "autoload": {
         "psr-0": {
