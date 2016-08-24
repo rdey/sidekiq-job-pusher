@@ -28,13 +28,13 @@ class Client
         $now = time();
         $ts = floatval($interval < 1000000000 ? ($now + $interval) : $interval);
 
-        $message = $this->messageSerialiser->prepare($workerClass, $arguments, $retry, $queue, $ts);
-        $this->push($message);
+        $this->perform_at($ts, $workerClass, $arguments, $retry, $queue);
     }
 
-    function perform_at($interval, $workerClass, $arguments = array(), $retry = false, $queue = 'default')
+    function perform_at($ts, $workerClass, $arguments = array(), $retry = false, $queue = 'default')
     {
-        $this->perform_in($interval, $workerClass, $arguments, $retry, $queue);
+        $message = $this->messageSerialiser->prepare($workerClass, $arguments, $retry, $queue, $ts);
+        $this->push($message);
     }
 
     protected function push($message)
