@@ -19,9 +19,38 @@ class Client
 
     function perform($workerClass, $arguments = array(), $retry = false, $queue = 'default')
     {
-        $key = $this->keyGenerator->generate($queue, $this->namespace);
-        $message = $this->messageSerialiser->serialise($workerClass, $arguments, $retry);
-        
-        $this->redis->lpush($key, $message);
+        $message = $this->messageSerialiser->prepare($workerClass, $arguments, $retry, $queue);
+        $this->push($message);
+    }
+
+    function perform_in($interval, $workerClass, $arguments = array(), $retry = false, $queue = 'default')
+    {
+        $now = time();
+        $ts = floatval($interval < 1000000000 ? ($now + $interval) : $interval);
+
+        $message = $this->messageSerialiser->prepare($workerClass, $arguments, $retry, $queue, $ts);
+        $this->push($message);
+    }
+
+    function perform_at($interval, $workerClass, $arguments = array(), $retry = false, $queue = 'default')
+    {
+        $this->perform_in($interval, $workerClass, $arguments, $retry, $queue);
+    }
+
+    protected function push($message)
+    {
+        if(isset($message['at']) && !is_null($message['at']))
+        {
+            $at = $message['at'];
+            unset($message['at']);
+
+            $key = $this->keyGenerator->generate('schedule', $this->namespace);
+            $payload = $this->messageSerialiser->serialise($message);
+            $this->redis->zadd($key, $at, $payload);
+        } else {
+            $key = $this->keyGenerator->generate($message['queue'], $this->namespace);
+            $payload = $this->messageSerialiser->serialise($message);
+            $this->redis->lpush($key, $payload);
+        }
     }
 }
